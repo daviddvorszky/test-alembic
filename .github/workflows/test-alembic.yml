@@ -50,3 +50,9 @@ jobs:
 
       - name: Run Alembic migrations
         run: alembic upgrade head
+      
+      - name: Run Alembic downgrade to base
+        run: alembic downgrade base
+
+      - name: Run Alembic upgrade to head again
+        run: alembic upgrade head
