@@ -13,8 +13,10 @@ jobs:
       - name: Install SQL Server
         uses: potatoqualitee/mssqlsuite@v1.7
         with:
-          install: sqlengine, sqlcmd
-          sa-password: 'Wh4t3V3r!' # The password can be shown here as the runner will be deleted
+          install: sqlengine
+          sa-password: Wh4t3V3r! # The password can be shown here as the runner will be deleted
+          version: 2019
+          collation: SQL_Latin1_General_CP1_CI_AS
 
       - name: Check out repository
         uses: actions/checkout@v3
