@@ -10,16 +10,18 @@ jobs:
   test-alembic:
     runs-on: ubuntu-latest
     steps:
-      - name: Install SQL Server ODBC Driver
+      - name: Install SQL Server ODBC Driver and sqlcmd
         run: |
           sudo apt-get update
           sudo apt-get install -y curl apt-transport-https gnupg
           curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
           curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
           sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev mssql-tools
+          echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+          source ~/.bashrc
           sudo apt-get install -y libgssapi-krb5-2  # Fix for some environments
-          
+
       - name: Install SQL Server
         uses: potatoqualitee/mssqlsuite@v1.7
         with:
@@ -27,6 +29,10 @@ jobs:
           sa-password: Wh4t3V3r! # The password can be shown here as the runner will be deleted
           version: 2019
           collation: SQL_Latin1_General_CP1_CI_AS
+      
+      - name: Create Database
+        run: |
+          /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Wh4t3V3r!' -Q "IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'demo_db') CREATE DATABASE demo_db"
 
       - name: Check out repository
         uses: actions/checkout@v3
